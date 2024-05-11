@@ -15,7 +15,6 @@ alias srf="surf lite.duckduckgo.com"
 alias i="sudo apt install "
 alias py="python3"
 alias gr="ls | grep "
-alias inv="surf https://docs.invidious.io/instances/"
 
 # custom PS1
 white="\033[1;37m"
