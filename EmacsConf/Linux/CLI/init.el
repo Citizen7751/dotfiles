@@ -1,21 +1,3 @@
-(custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(custom-enabled-themes '(citizen7751))
- '(custom-safe-themes
-   '("9b6cc6f1196f4010e8145037d8aabdf03cf087125e994e8a2a72e401391d6498" default))
- '(fancy-splash-image "~/.emacs.d/emacslogo.txt")
- '(package-selected-packages '(plantuml-mode))
- '(warning-suppress-log-types '((comp))))
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- )
-
 ;;-------------------------------------------------------------------------
 ;; Cutsom Settings
 
