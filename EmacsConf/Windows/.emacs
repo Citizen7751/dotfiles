@@ -94,6 +94,7 @@
 
 (setq confirm-kill-emacs 'yes-or-no-p)
 (setq display-time-24hr-format t)
+(setq calendar-week-start-day 1) ;;sunday = 0
 (setq make-backup-files nil)
 (setq auto-save-default nil)
 (setq ring-bell-function 'ignore)
