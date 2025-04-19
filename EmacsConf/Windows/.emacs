@@ -25,12 +25,14 @@
 (add-to-list 'load-path "~/.emacs.d/elpa/nasm-mode-20240610.1505/")
 (add-to-list 'load-path "~/.emacs.d/elpa/magit-20250319.2218/")
 (add-to-list 'load-path "~/.emacs.d/elpa/darkroom-0.3/")
+(add-to-list 'load-path "~/.emacs.d/elpa/gruber-darker-theme-20231026.2031/")
 
 (require 'markdown-mode)
 (require 'evil)
 (require 'nasm-mode)
 (require 'magit)
 (require 'darkroom)
+(require 'gruber-darker-theme)
 
 ;; ----------------------------------------------------------------------
 ;;Editor
@@ -41,10 +43,12 @@
 (visual-line-mode 1)
 (setq column-number-mode t)
 
+(setq-default display-line-numbers-type 'relative)
+(global-display-line-numbers-mode 1)
+
 ;;Programming Mode
 (setq-default fill-column 80)
 (defun my/progmode-rice ()
-  (display-line-numbers-mode 1)
   (display-fill-column-indicator-mode 1))
   (electric-pair-mode 1)
 (add-hook 'prog-mode-hook #'my/progmode-rice)
@@ -59,6 +63,7 @@
 ;;UI Customization
 (load-theme 'modus-vivendi t) ;; dark
 ;;(load-theme 'modus-operandi t) ;; light
+;;(load-theme 'gruber-darker)
 
 (global-font-lock-mode t)
 ;;(set-frame-parameter (selected-frame) 'alpha '(90 . 90)) 
@@ -92,6 +97,7 @@
 ;;-------------------------------------------------------------------------
 ;;System
 
+(setq inhibit-splash-screen t)
 (setq confirm-kill-emacs 'yes-or-no-p)
 (setq display-time-24hr-format t)
 (setq calendar-week-start-day 1) ;;sunday = 0
@@ -101,6 +107,7 @@
 (setq visible-bell t)
 ;;(setq debug-on-error t)
 
+(setq custom-file "~/.emacs.d/ecustom.el")
 (put 'upcase-region 'disabled nil)
 (put 'downcase-region 'disabled nil)
 
