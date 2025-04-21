@@ -20,19 +20,14 @@
 	     '("melpa" . "https://melpa.org/packages/"))
 (package-initialize)
 
-(add-to-list 'load-path "~/.emacs.d/elpa/markdown-mode-20250115.1658/")
-(add-to-list 'load-path "~/.emacs.d/elpa/evil-20250121.1800/")
-(add-to-list 'load-path "~/.emacs.d/elpa/nasm-mode-20240610.1505/")
-(add-to-list 'load-path "~/.emacs.d/elpa/magit-20250319.2218/")
-(add-to-list 'load-path "~/.emacs.d/elpa/darkroom-0.3/")
-(add-to-list 'load-path "~/.emacs.d/elpa/gruber-darker-theme-20231026.2031/")
+(require 'magit)
+(require 'smex)
+(require 'darkroom)
+(require 'material-theme)
+(require 'evil)
 
 (require 'markdown-mode)
-(require 'evil)
 (require 'nasm-mode)
-(require 'magit)
-(require 'darkroom)
-(require 'gruber-darker-theme)
 
 ;; ----------------------------------------------------------------------
 ;;Editor
@@ -40,8 +35,12 @@
 (tool-bar-mode -1)
 (menu-bar-mode -1)
 (scroll-bar-mode -1)
-(visual-line-mode 1)
+(visual-line-mode)
 (setq column-number-mode t)
+
+;;IDO
+(ido-mode 1)
+(ido-everywhere 1)
 
 (setq-default display-line-numbers-type 'relative)
 (global-display-line-numbers-mode 1)
@@ -61,15 +60,18 @@
 (setq basic-offset 4)
 
 ;;UI Customization
-(load-theme 'modus-vivendi t) ;; dark
+;;(load-theme 'modus-vivendi t) ;; dark
 ;;(load-theme 'modus-operandi t) ;; light
-;;(load-theme 'gruber-darker)
+(load-theme 'material t) ;; dark
 
 (global-font-lock-mode t)
 ;;(set-frame-parameter (selected-frame) 'alpha '(90 . 90)) 
 
 ;; ----------------------------------------------------------------------
 ;;Keybingings
+
+;;smex
+(global-set-key (kbd "M-x") (lambda () (interactive) (smex)))
 
 ;;Moving Windows
 (global-set-key (kbd "C-c <down>") (lambda () (interactive) (enlarge-window 2)))
@@ -84,15 +86,13 @@
 (global-set-key (kbd "M-n") (lambda () (interactive) (forward-paragraph)))
 (global-set-key (kbd "M-p") (lambda () (interactive) (backward-paragraph)))
 
-(global-set-key (kbd "C-c C-n") (lambda () (interactive) (beginning-of-buffer)))
-(global-set-key (kbd "C-c C-m") (lambda () (interactive) (end-of-buffer)))
-
 (global-set-key (kbd "C-c c") (lambda () (interactive) (find-file "~/.emacs")))
 (global-set-key (kbd "C-c e") (lambda () (interactive) (evil-mode 1)))
 (global-set-key (kbd "C-c w") (lambda () (interactive) (evil-mode 0)))
 (global-set-key (kbd "C-c o") (lambda () (interactive) (overwrite-mode 1)))
 (global-set-key (kbd "C-c p") (lambda () (interactive) (overwrite-mode 0)))
-;;(global-set-key (kbd "C-c C-r") (lambda () (interactive) (replace-string)))
+(global-set-key (kbd "C-,") (lambda () (interactive) (duplicate-line)))
+(global-set-key (kbd "C-.") (lambda () (interactive) (copy-from-above-command)))
 
 ;;-------------------------------------------------------------------------
 ;;System
