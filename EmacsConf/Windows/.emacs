@@ -23,11 +23,20 @@
 (require 'magit)
 (require 'smex)
 (require 'darkroom)
-(require 'material-theme)
 (require 'evil)
 
+(require 'material-theme)
 (require 'markdown-mode)
 (require 'nasm-mode)
+
+;;-------------------------------------------------------------------------
+;;Custom functions
+
+(defun my/progmode-rice ()
+  (display-fill-column-indicator-mode 1)
+  (electric-pair-mode 1))
+
+(defun my/def_read_only () (read-only-mode 1))
 
 ;; ----------------------------------------------------------------------
 ;;Editor
@@ -39,17 +48,17 @@
 (setq column-number-mode t)
 
 ;;IDO
+(setq ido-enable-flex-matching t)
+(setq ido-everywhere t)
+(setq ido-create-new-buffer 'always)
+(setq-default confirm-nonexistent-file-or-buffer nil)
 (ido-mode 1)
-(ido-everywhere 1)
 
 (setq-default display-line-numbers-type 'relative)
 (global-display-line-numbers-mode 1)
 
 ;;Programming Mode
 (setq-default fill-column 80)
-(defun my/progmode-rice ()
-  (display-fill-column-indicator-mode 1))
-  (electric-pair-mode 1)
 (add-hook 'prog-mode-hook #'my/progmode-rice)
 
 (display-time)
@@ -60,12 +69,12 @@
 (setq basic-offset 4)
 
 ;;UI Customization
-;;(load-theme 'modus-vivendi t) ;; dark
+(load-theme 'modus-vivendi t) ;; dark
 ;;(load-theme 'modus-operandi t) ;; light
-(load-theme 'material t) ;; dark
+;;(load-theme 'material t) ;; dark
 
 (global-font-lock-mode t)
-;;(set-frame-parameter (selected-frame) 'alpha '(90 . 90)) 
+(set-frame-parameter (selected-frame) 'alpha '(90 . 90)) 
 
 ;; ----------------------------------------------------------------------
 ;;Keybingings
@@ -92,12 +101,15 @@
 (global-set-key (kbd "C-c o") (lambda () (interactive) (overwrite-mode 1)))
 (global-set-key (kbd "C-c p") (lambda () (interactive) (overwrite-mode 0)))
 (global-set-key (kbd "C-,") (lambda () (interactive) (duplicate-line)))
-(global-set-key (kbd "C-.") (lambda () (interactive) (copy-from-above-command)))
+(global-set-key (kbd "M-,") (lambda () (interactive) (copy-from-above-command)))
 
 ;;-------------------------------------------------------------------------
 ;;System
 
 (setq inhibit-splash-screen t)
+(setq initial-scratch-message ";; Scratch Buffer
+
+")
 (setq confirm-kill-emacs 'yes-or-no-p)
 (setq display-time-24hr-format t)
 (setq calendar-week-start-day 1) ;;sunday = 0
@@ -110,6 +122,4 @@
 (setq custom-file "~/.emacs.d/ecustom.el")
 (put 'upcase-region 'disabled nil)
 (put 'downcase-region 'disabled nil)
-
-(defun my/def_read_only () (read-only-mode 1))
 (add-hook 'find-file-hook #'my/def_read_only)
