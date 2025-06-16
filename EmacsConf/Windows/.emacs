@@ -20,17 +20,23 @@
 	     '("melpa" . "https://melpa.org/packages/"))
 (package-initialize)
 
-(require 'magit)
-(require 'smex)
-(require 'darkroom)
-(require 'evil)
-(require 'multiple-cursors)
-(require 'auctex)
-(require 'markdown-mode)
-(require 'nasm-mode)
-(require 'zone-tmux-clock)
-
-(require 'material-theme)
+(use-package magit :ensure t :config)
+(use-package smex :ensure t :config)
+(use-package darkroom :ensure t :config)
+(use-package evil :ensure t :config)
+(use-package multiple-cursors :ensure t :config)
+(use-package auctex :ensure t :config)
+(use-package markdown-mode :ensure t :config)
+(use-package nasm-mode :ensure t :config)
+(use-package zone-tmux-clock :ensure t :config)
+(use-package eglot :ensure t)
+(use-package company
+  :ensure t
+  :init
+  (global-company-mode)
+  :config
+;;  (setq company-idle-delay 0.2)
+  (setq company-minimum-prefix-length 1))
 
 ;;-------------------------------------------------------------------------
 ;;Custom functions
@@ -41,34 +47,13 @@
 
 (defun my/def_read_only () (read-only-mode 1))
 
-(defun my/duplicate-line-n (&optional n)
-"This is the actual `duplicate-line' command from Emacs 29.
-I copied it to my config to be able to use it in previous
-versions as well."
-  (interactive "p")
-  (unless n
-    (setq n 1))
-  (let ((line (buffer-substring (line-beginning-position) (line-end-position)))
-        (pos (point))
-        (col (current-column)))
-    (forward-line 1)
-    (unless (bolp)
-      (insert "\n"))
-    (dotimes (_ n)
-      (insert line "\n"))
-    (unless (< duplicate-line-final-position 0)
-      (goto-char pos))
-    (unless (eq duplicate-line-final-position 0)
-      (forward-line duplicate-line-final-position)
-      (move-to-column col))))
-
 ;; ----------------------------------------------------------------------
 ;;Editor
 
 (tool-bar-mode -1)
 (menu-bar-mode -1)
 (scroll-bar-mode -1)
-(visual-line-mode)
+(global-visual-line-mode t)
 (setq column-number-mode t)
 
 ;;IDO
@@ -96,7 +81,6 @@ versions as well."
 ;;UI Customization
 (load-theme 'modus-vivendi t) ;; dark
 ;;(load-theme 'modus-operandi t) ;; light
-;;(load-theme 'material t)
 
 (global-font-lock-mode t)
 ;;(set-frame-font "fixedsys") ;; DOS style on Windows
@@ -105,10 +89,39 @@ versions as well."
 (set-frame-parameter (selected-frame) 'alpha '(90 . 90)) 
 
 ;; ----------------------------------------------------------------------
+;;Literate programming within Org-Mode with C
+
+(require 'ob-C)
+
+(org-babel-do-load-languages
+ 'org-babel-load-languages
+ '((emacs-lisp . t)
+   (C . t)
+   (python . t)))
+
+;;For C
+(setq org-babel-C-compiler "gcc -Wall -Wextra")
+(setq org-confirm-babel-evaluate nil)
+(setq org-babel-C-verbose nil)
+;;(add-to-list 'org-babel-tangle-lang-exts '("C" . "c"))
+
+;;For Python
+(setq org-babel-python-command "python3")
+
+;; ----------------------------------------------------------------------
 ;;Keybingings
 
 ;;smex
 (global-set-key (kbd "M-x") (lambda () (interactive) (smex)))
+
+;;Multiple Cursors
+(global-set-key (kbd "C-S-c C-S-c") 'mc/edit-lines)
+(global-set-key (kbd "C->") 'mc/mark-next-like-this)
+(global-set-key (kbd "C-<") 'mc/mark-previous-like-this)
+(global-set-key (kbd "C-c C-<") 'mc/mark-all-like-this)
+
+;;Autocomplete
+(global-set-key (kbd "C-<tab>") 'company-complete)
 
 ;;Moving Windows
 (global-set-key (kbd "C-c <down>") (lambda () (interactive) (enlarge-window 2)))
@@ -119,10 +132,6 @@ versions as well."
 (global-set-key (kbd "C-c C-<up>") (lambda () (interactive) (shrink-window 2)))
 (global-set-key (kbd "C-c C-<left>") (lambda () (interactive) (shrink-window-horizontally 2)))
 (global-set-key (kbd "C-c C-<right>") (lambda () (interactive) (enlarge-window-horizontally 2)))
-
-;;Beginning - End of buffer
-(global-set-key (kbd "C-x <down>") (lambda () (interactive) (end-of-buffer)))
-(global-set-key (kbd "C-x <up>") (lambda () (interactive) (beginning-of-buffer)))
 
 (global-set-key (kbd "M-n") (lambda () (interactive) (forward-paragraph)))
 (global-set-key (kbd "M-p") (lambda () (interactive) (backward-paragraph)))
@@ -136,39 +145,33 @@ versions as well."
 (global-set-key (kbd "C-.") (lambda () (interactive) (duplicate-line)))
 (global-set-key (kbd "M-,") (lambda () (interactive) (copy-from-above-command)))
 
+;;Beginning - End of buffer
+(global-set-key (kbd "C-x <down>") (lambda () (interactive) (end-of-buffer)))
+(global-set-key (kbd "C-x <up>") (lambda () (interactive) (beginning-of-buffer)))
 
 ;;-------------------------------------------------------------------------
 ;;System
 
 (setq inhibit-splash-screen t)
 (setq initial-scratch-message ;;nil
-;; "
-;; ;; ███████╗███╗   ███╗ █████╗  ██████╗███████╗
-;; ;; ██╔════╝████╗ ████║██╔══██╗██╔════╝██╔════╝
-;; ;; █████╗  ██╔████╔██║███████║██║     ███████╗
-;; ;; ██╔══╝  ██║╚██╔╝██║██╔══██║██║     ╚════██║
-;; ;; ███████╗██║ ╚═╝ ██║██║  ██║╚██████╗███████║
-;; ;; ╚══════╝╚═╝     ╚═╝╚═╝  ╚═╝ ╚═════╝╚══════╝
-;; "
+"\
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣀⣀⣄
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠘⣿⣿⣿⣿⡀                      ⣠⣷⣦⣄
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣿⣿⣿⣿⣿⣶⣶⣶⣶⣶⣶⣶⣶⣶⣶⣶⣶⣶⣶⣶⣶⣶⣶⣶⣶⣶⣿⣿⣿⣿⠏
+⠀⠀⠀⣠⣶⣤⣀⣀⣠⣼⣿⠿⠛⠋⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠙⠛⠿⣿⣿⣿⡟
+⠀⠀⣰⣿⣿⣿⣿⣿⡿⠋⣡⡴⠞⠛⠋⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠙⠛⠳⢦⣄⠙⢿⣷⣀
+⠀⠀⠈⠙⢿⣿⣿⠟⢠⡾⠁⠀<==> Welcome to the <==> ⠈⢷⡄⠻⣿⣿⣿⣿⣿⡆
+⠀⠀⠀⠀⠈⣿⡟⠀⣾⠁⠀⠀╦ ╦┌─┐┬─┐┬┌─┌─┐┬ ┬┌─┐┌─┐   ⢿⡀⢻⣿⣿⣿⣿⣷
+⠀⠀⠀⢀⣼⣿⡇⢸⡇⠀⠀⠀║║║│ │├┬┘├┴┐└─┐├─┤│ │├─┘   ⢸⡇⢸⣿⡿⠋
+⠀⢶⣾⣿⣿⣿⣧⠀⣷⠀⠀⠀╚╩╝└─┘┴└─┴ ┴└─┘┴ ┴└─┘┴    ⠀⣼⠁⣸⣿⡀
+⠀⠸⣿⣿⣿⣿⣿⣆⠘⣧⡀ <======================> ⢀⣼⠃⣰⣿⣿⣷⣄
+⠀⠀⠉⠀⠀⠀⠙⢿⣷⣌⠛⠶⣤⣀⣀⣀⣀⣀⣀⣀⣀⣀⣀⣀⣀⣀⣀⣀⣀⣀⣀⣀⣀⣀⣤⡴⠛⣡⣾⣿⣿⣿⣿⣿⡟
+⠀⠀⠀⠀⠀⠀⠀⢸⣿⣿⣷⣦⣄⣀⣀⣀⣀⣀⣀⣀⣀⣀⣀⣀⣀⣀⣀⣀⣀⣀⣀⣀⣀⣠⣴⣾⡿⠛⠋⠛⠻⢿⠏
+⠀⠀⠀⠀⠀⠀⣠⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿
+⠀⠀⠀⠀⠀⠀⠈⠛⠿⣿⠏                    ⠙⣿⣿⣿⣿⡄
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀                      ⠙⠛⠋⠉
 
-"
-;; ██╗   ██╗██╗███╗   ███╗
-;; ██║   ██║██║████╗ ████║
-;; ██║   ██║██║██╔████╔██║
-;; ╚██╗ ██╔╝██║██║╚██╔╝██║
-;;  ╚████╔╝ ██║██║ ╚═╝ ██║
-;;   ╚═══╝  ╚═╝╚═╝     ╚═╝
-
-"
-
-;; "
-;; ;; ooooo  oooo ooooo oooo     oooo 
-;; ;;  888    88   888   8888o   888  
-;; ;;   888  88    888   88 888o8 88  
-;; ;;    88888     888   88  888  88  
-;; ;;     888     o888o o88o  8  o88o
-;; "
-)
+")
 
 ;;(setq use-short-answers t)
 (setq confirm-kill-emacs 'yes-or-no-p)
