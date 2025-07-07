@@ -20,6 +20,8 @@
 	     '("melpa" . "https://melpa.org/packages/"))
 (package-initialize)
 
+;;(setq package-check-signature nil)
+
 (use-package magit :ensure t :config)
 (use-package smex :ensure t :config)
 (use-package darkroom :ensure t :config)
@@ -29,7 +31,9 @@
 (use-package markdown-mode :ensure t :config)
 (use-package nasm-mode :ensure t :config)
 (use-package zone-tmux-clock :ensure t :config)
+(use-package cobol-mode :ensure t :config)
 (use-package eglot :ensure t)
+(use-package gdb-mi :ensure t)
 (use-package company
   :ensure t
   :init
@@ -43,7 +47,9 @@
 
 (defun my/progmode-rice ()
   (display-fill-column-indicator-mode 1)
-  (electric-pair-mode 1))
+  (display-line-numbers-mode 1)
+  ;;(electric-pair-mode 1)
+  )
 
 (defun my/def_read_only () (read-only-mode 1))
 
@@ -63,9 +69,9 @@
 (setq-default confirm-nonexistent-file-or-buffer nil)
 (ido-mode 1)
 
-;;(setq-default display-line-numbers-type 'absolute)
-(setq-default display-line-numbers-type 'relative)
-(global-display-line-numbers-mode 1)
+(setq-default display-line-numbers-type 'absolute)
+;;(setq-default display-line-numbers-type 'relative)
+;;(global-display-line-numbers-mode 1)
 
 ;;Programming Mode
 (setq-default fill-column 80)
@@ -78,6 +84,11 @@
 (setq c-basic-offset 4)
 (setq basic-offset 4)
 
+;;Company
+(setq company-dabbrev-other-buffers nil)
+(setq company-dabbrev-downcase nil)
+(setq dabbrev-abbrev-char-regexp "[^[:space:]]+")
+
 ;;UI Customization
 (load-theme 'modus-vivendi t) ;; dark
 ;;(load-theme 'modus-operandi t) ;; light
@@ -89,7 +100,7 @@
 (set-frame-parameter (selected-frame) 'alpha '(90 . 90)) 
 
 ;; ----------------------------------------------------------------------
-;;Literate programming within Org-Mode with C
+;;Literate programming within Org-Mode with C and Python
 
 (require 'ob-C)
 
@@ -100,13 +111,35 @@
    (python . t)))
 
 ;;For C
-(setq org-babel-C-compiler "gcc -Wall -Wextra")
+
+;;Compilers
+(setq org-babel-C-compiler "gcc -Wall -Wextra -std=c17") ;;Plain GCC
+;;(setq org-babel-C-compiler "clang -Wall -Wextra") ;;plain Clang
+;;(setq org-babel-C-compiler "x86_64-w64-mingw32-gcc -Wall -Wextra") ;;Posix C in Windows
+
 (setq org-confirm-babel-evaluate nil)
 (setq org-babel-C-verbose nil)
 ;;(add-to-list 'org-babel-tangle-lang-exts '("C" . "c"))
 
 ;;For Python
 (setq org-babel-python-command "python3")
+
+;; ----------------------------------------------------------------------
+;; LaTeX with AUCTex
+
+(setq TeX-engine 'default)
+(setq TeX-parse-self t)
+(setq TeX-PDF-mode t)
+
+(add-hook 'LaTeX-mode-hook #'visual-line-mode)
+(add-hook 'LaTeX-mode-hook #'flyspell-mode)
+(add-hook 'LaTeX-mode-hook #'LaTeX-math-mode)
+(add-hook 'LaTeX-mode-hook #'turn-on-reftex)
+(add-hook 'LaTeX-mode-hook #'TeX-source-correlate-mode)
+
+(setq TeX-source-correlate-start-server t)
+(setq TeX-source-correlate-mode t)
+(setq TeX-source-correlate-method 'synctex)
 
 ;; ----------------------------------------------------------------------
 ;;Keybingings
@@ -155,21 +188,21 @@
 (setq inhibit-splash-screen t)
 (setq initial-scratch-message ;;nil
 "\
-⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣀⣀⣄
-⠀⠀⠀⠀⠀⠀⠀⠀⠀⠘⣿⣿⣿⣿⡀                      ⣠⣷⣦⣄
-⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣿⣿⣿⣿⣿⣶⣶⣶⣶⣶⣶⣶⣶⣶⣶⣶⣶⣶⣶⣶⣶⣶⣶⣶⣶⣶⣿⣿⣿⣿⠏
-⠀⠀⠀⣠⣶⣤⣀⣀⣠⣼⣿⠿⠛⠋⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠙⠛⠿⣿⣿⣿⡟
-⠀⠀⣰⣿⣿⣿⣿⣿⡿⠋⣡⡴⠞⠛⠋⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠙⠛⠳⢦⣄⠙⢿⣷⣀
-⠀⠀⠈⠙⢿⣿⣿⠟⢠⡾⠁⠀<==> Welcome to the <==> ⠈⢷⡄⠻⣿⣿⣿⣿⣿⡆
-⠀⠀⠀⠀⠈⣿⡟⠀⣾⠁⠀⠀╦ ╦┌─┐┬─┐┬┌─┌─┐┬ ┬┌─┐┌─┐   ⢿⡀⢻⣿⣿⣿⣿⣷
-⠀⠀⠀⢀⣼⣿⡇⢸⡇⠀⠀⠀║║║│ │├┬┘├┴┐└─┐├─┤│ │├─┘   ⢸⡇⢸⣿⡿⠋
-⠀⢶⣾⣿⣿⣿⣧⠀⣷⠀⠀⠀╚╩╝└─┘┴└─┴ ┴└─┘┴ ┴└─┘┴    ⠀⣼⠁⣸⣿⡀
-⠀⠸⣿⣿⣿⣿⣿⣆⠘⣧⡀ <======================> ⢀⣼⠃⣰⣿⣿⣷⣄
-⠀⠀⠉⠀⠀⠀⠙⢿⣷⣌⠛⠶⣤⣀⣀⣀⣀⣀⣀⣀⣀⣀⣀⣀⣀⣀⣀⣀⣀⣀⣀⣀⣀⣀⣤⡴⠛⣡⣾⣿⣿⣿⣿⣿⡟
-⠀⠀⠀⠀⠀⠀⠀⢸⣿⣿⣷⣦⣄⣀⣀⣀⣀⣀⣀⣀⣀⣀⣀⣀⣀⣀⣀⣀⣀⣀⣀⣀⣀⣠⣴⣾⡿⠛⠋⠛⠻⢿⠏
-⠀⠀⠀⠀⠀⠀⣠⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿
-⠀⠀⠀⠀⠀⠀⠈⠛⠿⣿⠏                    ⠙⣿⣿⣿⣿⡄
-⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀                      ⠙⠛⠋⠉
+;; ⠀ ⠀⠀⠀⠀⠀⠀⠀⠀⣀⣀⣄
+;; ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠘⣿⣿⣿⣿⡀                      ⣠⣷⣦⣄
+;; ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣿⣿⣿⣿⣿⣶⣶⣶⣶⣶⣶⣶⣶⣶⣶⣶⣶⣶⣶⣶⣶⣶⣶⣶⣶⣶⣿⣿⣿⣿⠏
+;; ⠀⠀⠀⣠⣶⣤⣀⣀⣠⣼⣿⠿⠛⠋⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠙⠛⠿⣿⣿⣿⡟
+;; ⠀⠀⣰⣿⣿⣿⣿⣿⡿⠋⣡⡴⠞⠛⠋⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠙⠛⠳⢦⣄⠙⢿⣷⣀
+;; ⠀⠀⠈⠙⢿⣿⣿⠟⢠⡾⠁⠀<==> Welcome to the <==> ⠈⢷⡄⠻⣿⣿⣿⣿⣿⡆
+;; ⠀⠀⠀⠀⠈⣿⡟⠀⣾⠁⠀⠀╦ ╦┌─┐┬─┐┬┌─┌─┐┬ ┬┌─┐┌─┐   ⢿⡀⢻⣿⣿⣿⣿⣷
+;; ⠀⠀⠀⢀⣼⣿⡇⢸⡇⠀⠀⠀║║║│ │├┬┘├┴┐└─┐├─┤│ │├─┘   ⢸⡇⢸⣿⡿⠋
+;; ⠀⢶⣾⣿⣿⣿⣧⠀⣷⠀⠀⠀╚╩╝└─┘┴└─┴ ┴└─┘┴ ┴└─┘┴    ⠀⣼⠁⣸⣿⡀
+;; ⠀⠸⣿⣿⣿⣿⣿⣆⠘⣧⡀ <======================> ⢀⣼⠃⣰⣿⣿⣷⣄
+;; ⠀⠀⠉⠀ ⠀⠀⠙⢿⣷⣌⠛⠶⣤⣀⣀⣀⣀⣀⣀⣀⣀⣀⣀⣀⣀⣀⣀⣀⣀⣀⣀⣀⣀⣀⣤⡴⠛⣡⣾⣿⣿⣿⣿⣿⡟
+;; ⠀⠀⠀⠀ ⠀⠀ ⠀⢸⣿⣿⣷⣦⣄⣀⣀⣀⣀⣀⣀⣀⣀⣀⣀⣀⣀⣀⣀⣀⣀⣀⣀⣀⣠⣴⣾⡿⠛⠋⠛⠻⢿⠏
+;; ⠀⠀⠀⠀ ⠀ ⠀⣠⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿
+;; ⠀⠀⠀⠀   ⠀⠈⠛⠿⣿⠏                    ⠙⣿⣿⣿⣿⡄
+;; ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀                        ⠙⠛⠋⠉
 
 ")
 
